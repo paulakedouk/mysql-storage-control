@@ -19,6 +19,25 @@ connection.connect(function (err) {
     menu();
 });
 
+function showTable(res) {
+
+    var table = new Table({
+        head: ['ID', 'Product', 'Sale', 'Department', 'Price', 'Stock'],
+        colWidths: [5, 15, 10, 20, 10, 10]
+    });
+
+    // table is an Array, so you can `push` , `unshift`, `splice` and friends
+    for (i = 0; i < res.length; i++) {
+        table.push(
+            [res[i].id, res[i].product_name, res[i].product_sales, res[i].department_name, res[i].price, res[i].stock_quantity]
+        );
+    }
+
+    console.log(table.toString());
+
+
+}
+
 function menu() {
     inquirer
         .prompt([
@@ -34,8 +53,7 @@ function menu() {
                     return viewProducts();
 
                 case "View low inventory":
-                    // function
-                    break;
+                    return lowInventory();
 
                 case "Add to inventory":
                     // function
@@ -49,22 +67,21 @@ function menu() {
 }
 
 function viewProducts() {
-     connection.query("SELECT * FROM products", function (err, res) {
+
+    connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
+        showTable(res);
+        menu();
+    })
+}
 
-        var table = new Table({
-            head: ['ID', 'Product', 'Sale', 'Department', 'Price', 'Stock'],
-            colWidths: [5, 15, 10, 20, 10, 10]
-        });
+function lowInventory() {
 
-        // table is an Array, so you can `push` , `unshift`, `splice` and friends
-        for (i = 0; i < res.length; i++) {
-            table.push(
-                [res[i].id, res[i].product_name, res[i].product_sales, res[i].department_name, res[i].price, res[i].stock_quantity]
-            );
-        }
+    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, res) {
+        if (err) throw err;
+        showTable(res);
+        console.log('\nShowing all products with quantity lower than 5 above.\n');
 
-        console.log(table.toString());
         menu();
     })
 }
