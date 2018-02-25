@@ -24,8 +24,8 @@ function showTable() {
         if (err) throw err;
 
         var table = new Table({
-            head: ['ID', 'Product', 'Department', 'Price', 'Stock Qtd'],
-            colWidths: [15, 15, 15, 15, 15]
+            head: ['ID', 'Product', 'Department', 'Price', 'Stock'],
+            colWidths: [5, 15, 20, 10, 10]
         });
 
         // table is an Array, so you can `push` , `unshift`, `splice` and friends

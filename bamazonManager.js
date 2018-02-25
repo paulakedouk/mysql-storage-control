@@ -9,7 +9,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     password: "password",
-    database: "bamazon"
+    database: "bamazonManager"
 });
 
 connection.connect(function (err) {
@@ -53,14 +53,14 @@ function viewProducts() {
         if (err) throw err;
 
         var table = new Table({
-            head: ['ID', 'Product', 'Department', 'Price', 'Stock Qtd'],
-            colWidths: [15, 15, 15, 15, 15]
+            head: ['ID', 'Product', 'Sale', 'Department', 'Price', 'Stock'],
+            colWidths: [5, 15, 10, 20, 10, 10]
         });
 
         // table is an Array, so you can `push` , `unshift`, `splice` and friends
         for (i = 0; i < res.length; i++) {
             table.push(
-                [res[i].id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]
+                [res[i].id, res[i].product_name, res[i].product_sales, res[i].department_name, res[i].price, res[i].stock_quantity]
             );
         }
 
