@@ -19,7 +19,7 @@ connection.connect(function (err) {
     products();
 });
 
-function products() {
+function showTable() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
 
@@ -36,6 +36,15 @@ function products() {
         }
 
         console.log(table.toString());
+    })
+
+}
+
+function products() {
+    showTable();
+
+    connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
 
         inquirer
             .prompt([
@@ -76,8 +85,17 @@ function products() {
                 connection.query(query, { id: userInput.item }, function (err, res) {
                     if (err) throw err;
 
-                    console.log('stock ' + res[0].stock_quantity)
-                    console.log('user qnt ' + userInput.quantity)
+                    // console.log('stock ' + res[0].stock_quantity)
+                    // console.log('user qnt ' + userInput.quantity)
+
+                    if (res[0].stock_quantity < userInput.quantity) {
+                        console.log("Sorry. Insufficient quantity! We only have " + res[0].stock_quantity + " item remaining!")
+                        products();
+                    } else {
+                        var stock = res[0].stock_quantity - userInput.quantity;
+                        console.log('Sucessfully purchased ' + userInput.quantity + ' ' + res[0].product_name + '!');
+                        products()
+                    }
                 });
             });
     })
