@@ -28,11 +28,10 @@ function menu() {
                 message: "What would you like to do?",
                 choices: ['View products for sale', 'View low inventory', 'Add to inventory', 'Add new product']
             }
-        ]).then(function (answer) {
-            switch (answer.action) {
+        ]).then(function (input) {
+            switch (input.managerInput) {
                 case "View products for sale":
-                    // function
-                    break;
+                    return viewProducts();
 
                 case "View low inventory":
                     // function
@@ -47,5 +46,25 @@ function menu() {
                     break;
             }
         })
+}
 
+function viewProducts() {
+     connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+
+        var table = new Table({
+            head: ['ID', 'Product', 'Department', 'Price', 'Stock Qtd'],
+            colWidths: [15, 15, 15, 15, 15]
+        });
+
+        // table is an Array, so you can `push` , `unshift`, `splice` and friends
+        for (i = 0; i < res.length; i++) {
+            table.push(
+                [res[i].id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]
+            );
+        }
+
+        console.log(table.toString());
+        menu();
+    })
 }
