@@ -90,11 +90,27 @@ function products() {
 
                     if (res[0].stock_quantity < userInput.quantity) {
                         console.log("Sorry. Insufficient quantity! We only have " + res[0].stock_quantity + " item remaining!")
-                        products();
+
                     } else {
                         var stock = res[0].stock_quantity - userInput.quantity;
-                        console.log('Sucessfully purchased ' + userInput.quantity + ' ' + res[0].product_name + '!');
-                        products()
+
+                        connection.query("UPDATE products SET ? WHERE ?",
+                            [
+                                {
+                                    stock_quantity: stock
+                                },
+                                {
+                                    id: userInput.item
+                                }
+                            ],
+                            function (error) {
+                                if (error) throw err;
+
+                                console.log('\nSucessfully purchased ' + userInput.quantity + ' ' + res[0].product_name + '!');
+                                console.log('Your total cost is: $' + res[0].price * userInput.quantity + '!\n');
+
+                                products();
+                            });
                     }
                 });
             });
