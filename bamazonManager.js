@@ -36,7 +36,6 @@ function showTable(res) {
       res[i].stock_quantity
     ]);
   }
-
   console.log(table.toString());
 }
 
@@ -62,8 +61,7 @@ function menu() {
           return addToInventory();
 
         case 'Add new product':
-          // function
-          break;
+          return addNewProduct();
 
         case 'Quit':
           process.exit();
@@ -93,8 +91,7 @@ function lowInventory() {
 function addToInventory() {
   connection.query('SELECT * FROM products', function(err, res) {
     if (err) throw err;
-
-    showTable(res);
+    // showTable(res);
 
     inquirer
       .prompt([
@@ -113,7 +110,13 @@ function addToInventory() {
         {
           type: 'input',
           name: 'quantity',
-          message: 'How many items would you like to add??'
+          message: 'How many items would you like to add??',
+          validate: function(value) {
+            if (value.match(/\d+/i) && value > -1) {
+              return true;
+            }
+            return 'Enter a valid quantity of items';
+          }
         }
       ])
       .then(function(userInput) {
@@ -137,8 +140,8 @@ function addToInventory() {
               id: chosen.id
             }
           ],
-          function(error) {
-            if (error) throw err;
+          function(err) {
+            if (err) throw err;
 
             console.log(
               '\nInventory added! \nYou have successfully added ' +
@@ -146,7 +149,87 @@ function addToInventory() {
                 ' units of ' +
                 chosen.product_name
             );
-            console.log('Now you have ' + newStock + '\n units!');
+            console.log('Now you have ' + newStock + 'units!\n ');
+            menu();
+          }
+        );
+      });
+  });
+}
+
+function addNewProduct() {
+  connection.query('SELECT department_name FROM products GROUP BY department_name', function(err, res) {
+    if (err) throw err;
+
+    // showTable(res);
+
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'productName',
+          message: 'What is the name of the product you would like to add?',
+          validate: function(value) {
+            if (value.length > 0) {
+              return true;
+            }
+            return 'Enter a valid product name';
+          }
+        },
+        {
+          type: 'list',
+          name: 'productDepartment',
+          message: 'which department does this product fall into?',
+          choices: function() {
+            var choiceArr = [];
+            for (var i = 0; i < res.length; i++) {
+              choiceArr.push(res[i].department_name);
+            }
+            return choiceArr;
+          }
+        },
+        {
+          name: 'productPrice',
+          type: 'input',
+          message: 'How much does it cost?',
+          filter: function(value) {
+            return parseFloat(value);
+          },
+          validate: function(value) {
+            if (value.length > 0) {
+              return true;
+            } else if (isNaN(value) === false) {
+              return true;
+            }
+            return 'Enter a valid price';
+          }
+        },
+        {
+          name: 'productStock',
+          type: 'input',
+          message: 'How many do we have?',
+          validate: function(value) {
+            if (value.length > 0) {
+              return true;
+            } else if (isNaN(value) === false) {
+              return true;
+            }
+            return 'Enter a valid initial stock quantity';
+          }
+        }
+      ])
+      .then(function(userInput) {
+        connection.query(
+          'INSERT INTO products SET ?',
+          {
+            product_name: userInput.productName,
+            department_name: userInput.productDepartment,
+            price: userInput.productPrice,
+            stock_quantity: userInput.productStock
+          },
+          function(err) {
+            if (err) throw err;
+            console.log('\n' + userInput.productName + ' added to Bamazon!\n');
             menu();
           }
         );
