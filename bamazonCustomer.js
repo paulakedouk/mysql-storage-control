@@ -84,7 +84,8 @@ function products() {
           // console.log('user qnt ' + userInput.quantity)
 
           if (res[0].stock_quantity < userInput.quantity) {
-            console.log('Sorry. Insufficient quantity! We only have ' + res[0].stock_quantity + ' item remaining!');
+            console.log('\nSorry. Insufficient quantity! We only have ' + res[0].stock_quantity + ' item remaining!\n');
+            products();
           } else {
             var stock = res[0].stock_quantity - userInput.quantity;
 
