@@ -149,7 +149,7 @@ function addToInventory() {
                 ' units of ' +
                 chosen.product_name
             );
-            console.log('Now you have ' + newStock + 'units!\n ');
+            console.log('Now you have ' + newStock + ' units!\n ');
             menu();
           }
         );
